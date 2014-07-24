@@ -22,13 +22,21 @@ tb = TextBuilder()
 def make_cloud(cloud_type,time,maxsize=90,cutoff=70):
     """ Make word cloud. Returns path to image file"""
 
-    text = tb.build_text(cloud_type)
+    text = tb.build_text(cloud_type,cutoff_age=1)
 
-    filename = "images/" + cloud_type + "_" + time + ".jpeg"
-    tags = make_tags(get_tag_counts(text), minsize=40, maxsize=maxsize)[:cutoff]
-    create_tag_image(tags, filename, background=(245,246,245),size=(900, 600), layout=2)
+    filename = "images/" + cloud_type + "_" + time + ".png"
+    tags = make_tags(get_tag_counts(text), minsize=40, maxsize=maxsize)
 
-    return filename
+    if len(tags) >= cutoff:
+    	tags = tags[:cutoff]
+    else:
+    	return None
+
+    if tags:
+        create_tag_image(tags, filename, background=(0,0,0),size=(900, 600), layout=2)
+        return filename
+    else:
+    	return None
 
 
 # go
@@ -45,14 +53,15 @@ auth = OAuthHandler(swa.consumer_key, swa.consumer_secret)
 auth.set_access_token(swa.access_token, swa.access_token_secret)
 api = API(auth)
 
-# Send the tweet with photo
-status = 'top twitter skatewords of the day'
-api.update_with_media(tweet_img, status=status)
+# send the tweet with photo
+if tweet_img:
+    status = 'top twitter skatewords of the day'
+    api.update_with_media(tweet_img, status=status)
+    os.remove(tweet_img)
 
-status = 'top skateboarding hashtags of the day'
-api.update_with_media(hashtag_img, status=status)
+if hashtag_img:
+    status = 'top skateboarding hashtags of the day'
+    api.update_with_media(hashtag_img, status=status)
+    os.remove(hashtag_img)
 
-logging.info("    Removing image files")
-os.remove(tweet_img)
-os.remove(hashtag_img)
 logging.info("    Done! \n")
