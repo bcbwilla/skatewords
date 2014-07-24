@@ -17,6 +17,7 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 # get textbuilder, which will help get text from database
 tb = TextBuilder(cutoff_age=1)
+num_tweets = tb.tweets_collection.count()
 
 
 def make_cloud(cloud_type,time,maxsize=90,cutoff=70):
@@ -55,12 +56,12 @@ api = API(auth)
 
 # send the tweet with photo
 if tweet_img:
-    status = 'top twitter skatewords of the day'
+    status = 'top skatewords of the day from %d tweets' % num_tweets
     api.update_with_media(tweet_img, status=status)
     os.remove(tweet_img)
 
 if hashtag_img:
-    status = 'top skateboarding hashtags of the day'
+    status = 'top skateboarding hashtags of the day from %d tweets' % num_tweets
     api.update_with_media(hashtag_img, status=status)
     os.remove(hashtag_img)
 
