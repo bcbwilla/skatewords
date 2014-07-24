@@ -16,13 +16,13 @@ LOG_FILENAME = 'the.log'
 logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 # get textbuilder, which will help get text from database
-tb = TextBuilder()
+tb = TextBuilder(cutoff_age=1)
 
 
 def make_cloud(cloud_type,time,maxsize=90,cutoff=70):
     """ Make word cloud. Returns path to image file"""
 
-    text = tb.build_text(cloud_type,cutoff_age=1)
+    text = tb.build_text(cloud_type)
 
     filename = "images/" + cloud_type + "_" + time + ".png"
     tags = make_tags(get_tag_counts(text), minsize=40, maxsize=maxsize)

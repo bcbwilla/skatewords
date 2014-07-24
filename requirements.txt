@@ -1,0 +1,4 @@
+pymongo==2.7.1
+pyyaml==3.11
+tweepy==2.3.0
+pytagcloud
