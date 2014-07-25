@@ -21,13 +21,13 @@ tb = TextBuilder(cutoff_age=1)
 num_tweets = tb.tweets_collection.count()
 
 
-def make_cloud(cloud_type,time,maxsize=80,cutoff=100,layout=4):
+def make_cloud(cloud_type,time,maxsize=80,cutoff=80,layout=4):
     """ Make word cloud. Returns path to image file"""
 
     text = tb.build_text(cloud_type)
 
     filename = "images/" + cloud_type + "_" + time + ".png"
-    tags = make_tags(get_tag_counts(text), minsize=1, maxsize=maxsize)
+    tags = make_tags(get_tag_counts(text), minsize=30, maxsize=maxsize)
 
     if len(tags) >= cutoff:
     	tags = tags[:cutoff]
