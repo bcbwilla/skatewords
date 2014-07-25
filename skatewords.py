@@ -8,8 +8,8 @@ from datetime import datetime, timedelta
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
-
 from pymongo import MongoClient
+from nltk.corpus import stopwords
 
 import sw_auth as swa
 
@@ -40,7 +40,7 @@ class StdOutListener(StreamListener):
 
 
     def trim_response(self, tweet):
-        """Keep only the important bits of the tweet"""
+        """ Keep only the important bits of the tweet """
 
         trimmed = {}
         trimmed['text'] = tweet['text']
@@ -77,28 +77,51 @@ class TextBuilder(object):
         else:
             self.data = list(self.tweets_collection.find())
 
-        self.TWEET_FILTER = "(@[A-Za-z0-9]+)|(#[A-Za-z0-9]+)|(skat[A-Za-z0-9 ]+)|(rt )|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"
-        self.HASHTAG_FILTER = "(@[A-Za-z0-9]+)|(#[A-Za-z0-9]+)|(rt )|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"
+        self.re_filter = "(@[A-Za-z0-9]+)|(#[A-Za-z0-9]+)|(rt )|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"
 
-        # get list of words to filter. currently english, spanish and french
-        self.stopwords = [line.strip() for line in open('stopwords.txt', 'r')]
+        # get list of words to filter. use custom list and all stopwords from nltk
+        self.stopwords = [line.strip() for line in open('stopwords.txt', 'r')] + stopwords.words()
 
 
     def build_text(self,text_type):
+        """ Returns a single text string (or None).
+            text_type -- tweet or hashtag
+        """
 
-        if text_type == "tweet":
+        texts = []
+        if text_type == 'tweet':
             # put tweets all in one big string
-            text = ' '.join([t['text'] for t in self.data if t['text'] not in self.stopwords])
-            re_filter = self.TWEET_FILTER
-        elif text_type == "hashtag":
-            # make a list of lists of hashtags from all the tweets
-            k = 'hashtags'
-            hashtags = [t[k] for t in self.data if t[k]]
-            # compress all hashtags into a single space-separated string
-            text = ' '.join([x for hts in hashtags for x in hts if x not in self.stopwords]) # phew
-            re_filter = self.HASHTAG_FILTER
+            for tweet in self.data:
+                texts.append(tweet['text'].lower())
+        elif text_type == 'hashtag':
+            for tweet in self.data:
+                texts.append(' '.join(ht.lower() for ht in tweet['hashtags']))
         else:
             return None
 
-        # do some final regex filtering and return
-        return ' '.join(re.sub(re_filter, " ", text, flags=re.I).split())
+        final_text = '' # what the word cloud will be made of
+        for text in texts:
+            # initial regex processing to remove puntuation, urls, mentionsm etc.
+            text = ' '.join(re.sub(self.re_filter, " ", text, flags=re.I).split())
+            text = ' '.join([word for word in text.split() if self.keep_word(word)]) # word
+            
+            final_text += text
+
+        return final_text
+
+
+    def keep_word(self, word):
+        """ Returns false if word is in stopwords or non ascii """
+        
+        # keep only ascii words
+        try:
+            word.encode('ascii')
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            return False
+        else:
+            
+            # remove stop words
+            if word not in self.stopwords:
+                return True
+            else:
+                return False
