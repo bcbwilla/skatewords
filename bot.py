@@ -18,7 +18,7 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 # get textbuilder, which will help get text from database
 tb = TextBuilder(cutoff_age=1)
-num_tweets = tb.tweets_collection.count()
+num_tweets = len(tb.data)
 
 
 def make_cloud(cloud_type,time,maxsize=80,cutoff=65,layout=4):
