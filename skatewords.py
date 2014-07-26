@@ -9,7 +9,6 @@ from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 from pymongo import MongoClient
-from nltk.corpus import stopwords
 
 import sw_auth as swa
 
@@ -80,7 +79,7 @@ class TextBuilder(object):
         self.re_filter = "(@[A-Za-z0-9]+)|(#[A-Za-z0-9]+)|(rt )|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"
 
         # get list of words to filter. use custom list and all stopwords from nltk
-        self.stopwords = [line.strip() for line in open('stopwords.txt', 'r')] + stopwords.words()
+        self.stopwords = [line.strip() for line in open('stopwords.txt', 'r')]
 
 
     def build_text(self,text_type):
