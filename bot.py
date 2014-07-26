@@ -21,7 +21,7 @@ tb = TextBuilder(cutoff_age=1)
 num_tweets = tb.tweets_collection.count()
 
 
-def make_cloud(cloud_type,time,maxsize=80,cutoff=80,layout=4):
+def make_cloud(cloud_type,time,maxsize=80,cutoff=65,layout=4):
     """ Make word cloud. Returns path to image file"""
 
     text = tb.build_text(cloud_type)
