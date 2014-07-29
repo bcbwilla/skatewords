@@ -16,3 +16,5 @@ There are lots of ways you can contribute.
  - Tell others about skatewords (preferably people with predispositions to contributing to open source skateboarding related twitter bots).
  - Tweet the [author](https://www.twitter.com/bcbwilla) about any strange behvior / bugs / cool things you'd like to see added.
  - [Follow](https://twitter.com/skatewords) and send compliments.
+
+More silly skateboarding analytics on the [author's blog](http://www.electronexchange.net).
