@@ -11,11 +11,15 @@ from skatewords import StdOutListener
 auth = OAuthHandler(swa.consumer_key, swa.consumer_secret)
 auth.set_access_token(swa.access_token, swa.access_token_secret)
 
+# what to listen for
+track_list = ['skateboard','skateboarding','skateboarder','skateboards',
+    'skateboarders','sk8board','sk8boarding','sk8boarders','sk8boards']
+
 try:
     # run stream
     l = StdOutListener()
     stream = Stream(auth, l)
-    stream.filter(track=['skateboard','skateboarding','skateboarder'])
+    stream.filter(track=track_list)
 except KeyboardInterrupt:
-    print "Stopping twitter stream collector."
+    print "\nStopping twitter stream collector."
     sys.exit()
